@@ -5,11 +5,11 @@ RA:
 
 ## R1 (Item 10)
 
-Status da página  /  :
+Status da página  /  : 401
 
-Status da API  /api/palestrantes  :
+Status da API  /api/palestrantes  : Funcionando
 
-Explicação: Faltava o comando commit para slavas as informações
+Explicação: Faltava o comando commit para salvar as informações
 
 ## R2 (Item 11)
 
