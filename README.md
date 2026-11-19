@@ -9,3 +9,6 @@ Lembretes:
 - Verificar se o Python está instalado: python3 --version
 - Instalar o flask se necessário: pip install flask
 - Executar python nome do arquivo .py
+
+- Mandar para o github:
+  git add .git commit -m "item 4"git push
