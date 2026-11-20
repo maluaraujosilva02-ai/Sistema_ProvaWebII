@@ -7,7 +7,7 @@ from models.palestrante import Palestrante
 from dao.palestrante_dao import PalestranteDAO
 
 palestrante_bp = Blueprint("palestrante", __name__)
-
+#ITem 5
 @palestrante_bp.before_request
 def exigir_login():
     if 'usuario_id' not in session:
