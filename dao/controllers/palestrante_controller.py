@@ -8,12 +8,16 @@ from dao.palestrante_dao import PalestranteDAO
 
 palestrante_bp = Blueprint("palestrante", __name__)
 
-
-# ===== ITEM 5 ========================================================
-# Hoje qualquer pessoa abre as paginas deste Blueprint sem entrar no
-# sistema. Escreva aqui a protecao, em um ponto so.
-# =====================================================================
-
+#Item 5
+@palestrante_bp.before_request
+def exigir_login():
+    if 'usuario_id' not in session:
+        flash("Você precisa estar logado para acessar esta página.")
+        return redirect(url_for('autenticacao.login'))
+    
+def converter_vagas_para_inteiro(texto):
+    texto = texto.strip()
+    return int(texto) if texto.isdigit() else None
 
 # Listagem (GET) e cadastro (POST) na mesma rota
 @palestrante_bp.route("/", methods=["GET", "POST"])
@@ -28,13 +32,12 @@ def index():
         flash("Palestrante cadastrado.")
         return redirect(url_for("palestrante.index"))
 
-    # ===== ITEM 3 ====================================================
-    # Conte aqui, na SESSAO, quantas vezes esta pessoa abriu a listagem.
-    # A chave deve se chamar "visitas". O template ja exibe o valor.
-    # =================================================================
+    # Item 3
+    if "visitas" not in session:
+        session["visitas"] = 0
+    session["visitas"] += 1
 
     return render_template("index.html", palestrantes=PalestranteDAO.listar())
-
 
 # Edicao - GET mostra o formulario preenchido
 @palestrante_bp.route("/editar/<int:id>", methods=["GET", "POST"])
