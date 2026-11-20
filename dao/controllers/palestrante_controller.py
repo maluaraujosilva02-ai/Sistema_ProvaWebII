@@ -1,14 +1,13 @@
 # Controller de PAGINAS - todas as rotas daqui respondem HTML ou
 # redirecionamento.
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask import session
 from models.palestrante import Palestrante
 from dao.palestrante_dao import PalestranteDAO
 
 palestrante_bp = Blueprint("palestrante", __name__)
 
-#Item 5
 @palestrante_bp.before_request
 def exigir_login():
     if 'usuario_id' not in session:
@@ -39,15 +38,25 @@ def index():
 
     return render_template("index.html", palestrantes=PalestranteDAO.listar())
 
+
 # Edicao - GET mostra o formulario preenchido
 @palestrante_bp.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
     palestrante = PalestranteDAO.buscar_por_id(id)
+    #item 4
+    if palestrante is None:          # id inexistente -> pagina 404
+        abort(404)
 
-    # ===== ITEM 4 ====================================================
-    # O formulario de edicao e enviado para esta rota por POST, mas nada
-    # e gravado. Trate aqui o envio: grave a alteracao e volte a listagem.
-    # =================================================================
+    if request.method == "POST":
+        PalestranteDAO.atualizar(
+            palestrante,
+            nome=request.form["nome"],
+            data=request.form["data"],
+            local=request.form["local"],
+            vagas=converter_vagas_para_inteiro(request.form["vagas"]),
+        )
+        flash("Palestrante atualizado.")
+        return redirect(url_for("palestrante.index"))
 
     return render_template("editar.html", palestrante=palestrante)
 
