@@ -29,15 +29,25 @@ def listar():
 
     return jsonify(lista)
 
-
 # ===== ITEM 7 ========================================================
-# Escreva aqui a rota GET /api/palestrantes/<id>, que devolve UM registro.
-# Se o id nao existir, a resposta e 404 com {"erro": "Palestrante nao encontrado."}.
-# =====================================================================
-
+#item 7
+@api_bp.route("/api/palestrantes/<int:id>", methods=["GET"])
+def buscar(id):
+    palestrante = PalestranteDAO.buscar_por_id(id)
+    # o pedido apontou para algo que nao existe
+    if not palestrante:
+        return jsonify({"erro": "Palestrante nao encontrado."}), 404
+    return jsonify(palestrante.para_dicionario())
 
 # ===== ITEM 9 ========================================================
-# Escreva aqui a rota DELETE /api/palestrantes/<id>, que remove UM registro.
-# Sucesso: 204, sem corpo. Se o id nao existir: 404 com
-# {"erro": "Palestrante nao encontrado."}.
-# =====================================================================
+@api_bp.route("/palestrantes/<int:id>", methods=["DELETE"])
+def remover(id):
+    if session.get("usuario_perfil") != "admin":
+        return jsonify({"erro": "Acesso negado."}), 403
+    
+    palestrante = PalestranteDAO.buscar_por_id(id)
+    if not palestrante:
+        return jsonify({"erro": "Palestrante nao encontrado."}), 404
+
+    PalestranteDAO.remover(palestrante)
+    return "", 204
