@@ -7,6 +7,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from models.usuario import Usuario
 from dao.usuario_dao import UsuarioDAO
 
+senha_hash = generate_password_hash("prova123")
+confere = check_password_hash (senha_hash, "prova123")
+
 auth_bp = Blueprint("auth", __name__)
 
 
