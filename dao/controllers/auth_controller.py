@@ -3,7 +3,7 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import session
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from models.usuario import Usuario
 from dao.usuario_dao import UsuarioDAO
 
@@ -28,7 +28,12 @@ def login():
 
 @auth_bp.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
+    #Item 6
     if request.method == "POST":
+        email = request.form['email'].strip().lower()
+        senha = request.form['senha']
+        nome = request.form['nome']
+
         if UsuarioDAO.buscar_por_email(request.form["email"]):
             flash("Ja existe uma conta com este e-mail.")
             return render_template("cadastro.html")
@@ -36,13 +41,43 @@ def cadastro():
         usuario = Usuario(
             nome=request.form["nome"],
             email=request.form["email"],
-            senha_hash=request.form["senha"]
+            senha_hash=generate_password_hash(request.form["senha"])
         )
         UsuarioDAO.salvar(usuario)
         flash("Conta criada. Faca login para continuar.")
         return redirect(url_for("auth.login"))
 
     return render_template("cadastro.html")
+
+#item 6
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+
+        # Pega o email do formulário, remove espaços e converte em minúsculas
+        email = request.form['email'].strip().lower()
+        senha = request.form['senha']
+        if autenticar_usuario(email, senha):
+            flash("Login realizado com sucesso!", "success")
+            return redirect(url_for("palestrante.index"))
+        else:
+            flash("Email ou senha incorretos. Por favor, tente novamente.", "error")
+
+    return render_template("login.html")
+
+def autenticar_usuario(email, password):
+    usuario = UsuarioDAO.buscar_usuario_por_email(email)
+    if usuario and check_password_hash(usuario.senha_hash, password):
+        session["usuario_id"] = usuario.id
+        session["usuario_perfil"] = usuario.perfil
+        return True
+    return False
+
+
+@auth_bp.route("/sair", methods=["POST"])
+def sair():
+    session.clear()
+    return redirect(url_for("auth.login"))
 
 
 @auth_bp.route("/sair", methods=["POST"])
