@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import usuario
-from models.usuario import Usuario
+from models.usuario import Usuario, senha_hash
 from dao.usuario_dao import UsuarioDAO
 
 senha_hash = generate_password_hash("prova123")
