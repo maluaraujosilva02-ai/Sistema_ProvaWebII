@@ -4,6 +4,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
+from models import usuario
 from models.usuario import Usuario
 from dao.usuario_dao import UsuarioDAO
 
@@ -20,6 +21,12 @@ def login():
         # Pega o email do formulário, remove espaços e converte em minúsculas
         email = request.form['email'].strip().lower()
         senha = request.form['senha']
+
+        if usuario and check_password_hash(usuario.senha_hash, request.form["senha"]):
+            session["usuario_id"] = usuario.id
+            session["usuario_nome"] = usuario.nome
+            return redirect(url_for("palestrante.index"))
+        
         if autenticar_usuario(email, senha):
             flash("Login realizado com sucesso!", "success")
             return redirect(url_for("palestrante.index"))
@@ -52,7 +59,7 @@ def cadastro():
     return render_template("cadastro.html")
 
 def autenticar_usuario(email, password):
-    usuario = UsuarioDAO.buscar_usuario_por_email(email)
+    usuario = UsuarioDAO.buscar_por_email(request.form["email"])
     if usuario and check_password_hash(usuario.senha_hash, password):
         session["usuario_id"] = usuario.id
         session["usuario_perfil"] = usuario.perfil
