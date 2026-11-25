@@ -16,7 +16,7 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-
+        UsuarioDAO.buscar_por_email(request.form["email"])
         # Pega o email do formulário, remove espaços e converte em minúsculas
         email = request.form['email'].strip().lower()
         senha = request.form['senha']
