@@ -12,7 +12,7 @@ palestrante_bp = Blueprint("palestrante", __name__)
 def exigir_login():
     if 'usuario_id' not in session:
         flash("Você precisa estar logado para acessar esta página.")
-        return redirect(url_for('autenticacao.login'))
+        return redirect(url_for('auth.login'))
     
 def converter_vagas_para_inteiro(texto):
     texto = texto.strip()
