@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import usuario
-from models.usuario import Usuario, senha_hash
+from models.usuario import Usuario
 from dao.usuario_dao import UsuarioDAO
 
 senha_hash = generate_password_hash("prova123")
@@ -22,9 +22,9 @@ def login():
         email = request.form['email'].strip().lower()
         senha = request.form['senha']
 
-        if usuario and check_password_hash(usuario.senha_hash, request.form["senha"]):
-            session["usuario_id"] = usuario.id
-            session["usuario_nome"] = usuario.nome
+        if Usuario and check_password_hash(Usuario.senha_hash, request.form["senha"]):
+            session["usuario_id"] = Usuario.id
+            session["usuario_nome"] = Usuario.nome
             return redirect(url_for("palestrante.index"))
         
         if autenticar_usuario(email, senha):
